@@ -1,34 +1,37 @@
 /**
  * Created by panchaohui on 2017/3/26.
  */
-import {Comonent} from 'react'
-import markdown from 'markdown'
+import React, {Component} from 'react'
+import {markdown} from 'markdown'
 
-class MdUtil extends Comonent {
+class MarkDown extends Component {
 
     constructor(props) {
+        console.info(markdown)
         super(props)
         this.state = {
-            mdText: ''
+            mdText: '123'
         }
-        console.info(markdown)
     }
 
-
-    md2Html() {
-        let result = markdown.toHTML(this.state.mdText)
+    md2Html(e) {
+        let tVal = e.target.value;
+        this.setState({
+            mdText: tVal
+        })
+        let result = markdown.toHTML(tVal)
         console.log(result)
         this.refs.result.innerHTML = result;
     }
 
     render() {
         return (
-            <div>
-                <textarea onChange={this.md2Html}>{this.state.mdText}</textarea>
-                <pre ref="result"></pre>
+            <div style={{clear: "both"}}>
+                <textarea style={{width:"49%",float:"left"}} onChange={this.md2Html.bind(this)} value={this.state.mdText}></textarea>
+                <div style={{width:"49%",float:"left"}} ref="result"></div>
             </div>
         )
     }
 }
 
-export default MdUtil
+export default MarkDown

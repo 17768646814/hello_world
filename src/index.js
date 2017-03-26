@@ -1,25 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import {render} from 'react-dom'
+import {Router, Route, IndexRoute, Redirect, hashHistory, browserHistory} from 'react-router'
 
-import { AppContainer } from 'react-hot-loader';
-// AppContainer is a necessary wrapper component for HMR
 
-import App from './src/components/App';
+import App from './components/App'
 
-const render = (Component) => {
-    ReactDOM.render(
-        <AppContainer>
-            <Component/>
-        </AppContainer>,
-        document.getElementById('root')
-    );
-};
+// import 'antd/lib/style/'
+import 'antd/dist/antd.css'
 
-render(App);
 
-// Hot Module Replacement API
-if (module.hot) {
-    module.hot.accept('./components/App', () => {
-        render(App)
-    });
-}
+((undefined) => {
+    let $ = window.$ = function (sel, attr) {
+        let ele = document.createElement(sel)
+        attr = attr || {};
+        for (let i in attr) {
+            ele.setAttribute(i, attr[i])
+        }
+        return ele;
+    }
+
+    return $;
+})();
+
+document.head.appendChild($("link", {"rel": "stylesheet", "type": "text/css", "href": "dist/css/index.css"}))
+let $div = document.body.appendChild($("div"))
+
+render((
+    <Router history={browserHistory}>
+        <Route path="/" component={App}/>
+        <Redirect from='*' to='/'/>
+    </Router>
+), $div);

@@ -1,89 +1,90 @@
-/**
- * Created by panchaohui on 2017/3/25.
- */
-/*定义插件*/
 let path = require('path'),
     webpack = require('webpack'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin')/*css单独打包*/,
-    HtmlWebpackPlugin = require('html-webpack-plugin')/*生成html*/,
-    colors = require('colors');
+    ExtractTextWebpackPlugin = require('extract-text-webpack-plugin'),
+    extractCss = new ExtractTextWebpackPlugin('css/[name].css')
 
-/*定义地址*/
+
+require('colors')
+
 let ROOT_PATH = path.resolve(__dirname),
-    SRC_PATH = path.resolve(ROOT_PATH, 'src')/*__dirname 中的src目录，以此类推*/,
-    INDEX_FILE = path.resolve(SRC_PATH, 'index')/*根目录文件index.jsx地址*/,
-    BUILD_PATH = path.resolve(ROOT_PATH, 'dist')/*发布文件所存放的目录/dist/*/;
-console.info("ROOT_PATH ===============" + ROOT_PATH.yellow)
+    OUT_PUT_PATH = path.resolve(ROOT_PATH, 'dist')
+
+console.info("ROOT_PATH => []" + ROOT_PATH.blue)
+/**/
+console.info("OUT_PUT_PATH => []" + OUT_PUT_PATH.blue)
+/**/
 
 module.exports = {
-    devtool: 'cheap-module-eval-source-map',
-    entry: {
-        index: INDEX_FILE
-    },
+    context: ROOT_PATH/*The base directory, an absolute path, for resolving entry points and loaders from configuration, By default the current directory is used,*/,
+    entry: {index: './src/index.js'/*the entry point of our app*/},
     output: {
-        path: BUILD_PATH/*编译到当前目录*/,
-        publicPath: '/'/*编译好的文件，在服务器的路径,域名会自动添加到前面*/,
-        filename: '[name].js'/*编译后的文件名字*//*,
-         chunkFilename: '[name].[chunkhash:5].min.js'*/
+        path: OUT_PUT_PATH,
+        publicPath: '/dist/'/*necessary for HMR to know where to load the hot update chunks*/,
+        filename: '[name].js'/*the output bundle*/
     },
     module: {
-        loaders: [{
-            test: /\.js$/,
-            exclude: /^node_modules$/,
-            loader: 'babel',
-            include: [SRC_PATH]
-        }, {
-            test: /\.jsx$/,
-            exclude: /^node_modules$/,
-            loaders: ['jsx', 'babel'],
-            include: [SRC_PATH]
-        }, {
-            test: /\.css$/,
-            exclude: /^node_modules$/,
-            loader: ExtractTextPlugin.extract({fallback: 'style', use: ['css', 'postcss']})
-        }, {
-            test: /\.less$/,
-            exclude: /^node_modules$/,
-            loader: ExtractTextPlugin.extract({fallback: 'style', use: ['css', 'postcss', 'less']})
-        }, {
-            test: /\.scss$/,
-            exclude: /^node_modules$/,
-            loader: ExtractTextPlugin.extract({fallback: 'style', use: ['css', 'postcss', 'sass']})
-        }, {
-            test: /\.(eot|woff|svg|ttf|woff2|gif|appcache)(\?|$)/,
-            exclude: /^node_modules$/,
-            loader: 'file-loader?name=[name].[ext]'
-        }, {
-            test: /\.(png|jpg|gif)$/,
-            exclude: /^node_modules$/,
-            loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]'/*注意后面那个limit的参数，当你图片大小小于这个限制的时候，会自动启用base64编码图*/
-        }]
+        rules: [
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            },
+            {
+                test: /\.jsx$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            },
+            {
+                test: /\.css$/,
+                use: ExtractTextWebpackPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader?importLoaders=1', 'postcss-loader']
+                })
+            },
+            {
+                test: /\.less$/,
+                use: ExtractTextWebpackPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader?importLoaders=1', 'postcss-loader']
+                })
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+                loader: 'file-loader'
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
+                loader: 'file-loader',
+                query: {
+                    name: '[name].[ext]?[hash]'
+                }
+            }
+        ]
     },
-    plugins: [
+    devtool: '#eval-source-map'/*https://webpack.js.org/configuration/devtool/*/,
+    plugins: [extractCss]
+}
+
+if (process.env.NODE_ENV === 'production') {
+    module.exports.devtool = '#source-map'
+    module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: JSON.stringify('development')/*定义生产环境*/
+                NODE_ENV: '"production"'
             }
         }),
-        new HtmlWebpackPlugin({
-            /*根据模板插入css/js等生成最终HTML*/
-            filename: './index.html'/*生成的html存放路径，相对于 path*/,
-            template: './src/index.html', /*html模板路径*/
-            hash: false,
-        }),
-        new ExtractTextPlugin('[name].css')/*,
-        /!*提取出来的样式和common.js会自动添加进发布模式的html文件中，原来的html没有*!/
-        new webpack.optimize.CommonsChunkPlugin({name: "common", filename: "common.bundle.js"}),
         new webpack.optimize.UglifyJsPlugin({
-            output: {
-                comments: false/!*remove all comments*!/,
-            },
             compress: {
                 warnings: false
             }
-        })*/
-    ],
-    resolve: {
-        extensions: ['.js', '.jsx', '.less', '.scss', '.css'] /*后缀名自动补全*/
-    }
-};
+        }),
+        new webpack.LoaderOptionsPlugin({
+            minimize: true
+        })
+    ])
+} else {
+    module.exports.devServer = (module.exports.devServer || {});
+    module.exports.devServer.port = 8888;
+    module.exports.devServer.historyApiFallback = true;
+    module.exports.devServer.noInfo = true;
+}
