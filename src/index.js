@@ -5,7 +5,7 @@ import {Router, Route, IndexRoute, Redirect, hashHistory, browserHistory} from '
 
 import App from './components/App'
 
-// import 'antd/lib/style/'
+import 'antd/lib/style/'
 import 'antd/dist/antd.css'
 
 
@@ -22,7 +22,8 @@ import 'antd/dist/antd.css'
     return $;
 })();
 
-document.head.appendChild($("link", {"rel": "stylesheet", "type": "text/css", "href": "dist/css/index.css"}))
+document.head.appendChild($("link", {"rel": "stylesheet", "type": "text/css", "href": "dist/css/index-css.css"}))
+document.head.appendChild($("link", {"rel": "stylesheet", "type": "text/css", "href": "dist/css/index-less.css"}))
 let $div = document.body.appendChild($("div"))
 
 render((

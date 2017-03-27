@@ -1,7 +1,8 @@
 let path = require('path'),
     webpack = require('webpack'),
     ExtractTextWebpackPlugin = require('extract-text-webpack-plugin'),
-    extractCss = new ExtractTextWebpackPlugin('css/[name].css')
+    extractCSS = new ExtractTextWebpackPlugin('css/[name]-css.css'),
+    extractLESS = new ExtractTextWebpackPlugin('css/[name]-less.css')
 
 
 require('colors')
@@ -36,17 +37,19 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ExtractTextWebpackPlugin.extract({
-                    fallback: 'style-loader',
-                    use: ['css-loader?importLoaders=1', 'postcss-loader']
-                })
+                use: extractCSS.extract(['css-loader', 'postcss-loader'])
+                /*ExtractTextWebpackPlugin.extract({
+                 fallback: 'style-loader',
+                 use: ['css-loader', 'postcss-loader']
+                 })*/
             },
             {
                 test: /\.less$/,
-                use: ExtractTextWebpackPlugin.extract({
-                    fallback: 'style-loader',
-                    use: ['css-loader?importLoaders=1', 'postcss-loader']
-                })
+                use: extractLESS.extract(['css-loader', 'less-loader'])
+                /*ExtractTextWebpackPlugin.extract({
+                 fallback: 'style-loader',
+                 use: ['css-loader', 'postcss-loader']
+                 })*/
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
@@ -62,7 +65,9 @@ module.exports = {
         ]
     },
     devtool: '#eval-source-map'/*https://webpack.js.org/configuration/devtool/*/,
-    plugins: [extractCss]
+    plugins: [/*extractCss*/
+        extractCSS,
+        extractLESS]
 }
 
 if (process.env.NODE_ENV === 'production') {
