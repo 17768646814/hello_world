@@ -1,12 +1,13 @@
-## 技术栈
+## 技术栈 ##
 
 webpack react
 
-## 快速浏览？下载
+## 直接获取 ##
 ```
 git clone https://github.com/17768646814/hello_world.git
 cd hello_world
 npm i
+npm run dev
 ```
 
 ## get start

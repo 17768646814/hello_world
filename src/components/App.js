@@ -7,7 +7,7 @@ import {Button, Layout, Menu, Breadcrumb, Icon} from 'antd'
 import 'antd/lib/button/style/index.css'
 import './App.css'
 
-const { SubMenu } = Menu
+const {SubMenu} = Menu
 const {Header, Content, Footer, Sider} = Layout
 
 class App extends Component {
@@ -27,18 +27,29 @@ class App extends Component {
                     <Menu
                         theme="dark"
                         mode="horizontal"
-                        defaultSelectedKeys={['2']}
-                        style={{lineHeight: '64px'}}>
-                        <Menu.Item key="1">nav 1</Menu.Item>
-                        <Menu.Item key="2">nav 2</Menu.Item>
-                        <Menu.Item key="3">nav 3</Menu.Item>
+                        defaultSelectedKeys={['0']}
+                        style={{lineHeight: '64px'}}
+                        onSelect={function (item, key, selectedKeys) {
+                            console.info(item)
+                        }.bind(this)}>
+                        {
+                            ['首页', '前端', '后端'].map(function (data, ind) {
+                                return (
+                                    <Menu.Item key={ind}>{data}</Menu.Item>
+                                )
+                            })
+                        }
                     </Menu>
                 </Header>
                 <Content style={{padding: '0 50px'}}>
                     <Breadcrumb style={{margin: '12px 0'}}>
-                        <Breadcrumb.Item>Home</Breadcrumb.Item>
-                        <Breadcrumb.Item>List</Breadcrumb.Item>
-                        <Breadcrumb.Item>App</Breadcrumb.Item>
+                        {
+                            ['Home', 'App'].map(function (data, ind) {
+                                return (
+                                    <Breadcrumb.Item key={ind}>{data}</Breadcrumb.Item>
+                                )
+                            })
+                        }
                     </Breadcrumb>
                     <Layout style={{padding: '24px 0', background: '#fff'}}>
                         <Sider width={200} style={{background: '#fff'}}>

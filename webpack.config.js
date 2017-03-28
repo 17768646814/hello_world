@@ -4,20 +4,22 @@ let path = require('path'),
     extractCSS = new ExtractTextWebpackPlugin('css/[name]-css.css'),
     extractLESS = new ExtractTextWebpackPlugin('css/[name]-less.css')
 
-
 require('colors')
 
 let ROOT_PATH = path.resolve(__dirname),
     OUT_PUT_PATH = path.resolve(ROOT_PATH, 'dist')
 
-console.info("ROOT_PATH => []" + ROOT_PATH.blue)
-/**/
-console.info("OUT_PUT_PATH => []" + OUT_PUT_PATH.blue)
-/**/
+let debugArr = ["ROOT_PATH => [" + ROOT_PATH + "]", "OUT_PUT_PATH => [" + OUT_PUT_PATH + "]", "process.env.NODE_ENV => [" + process.env.NODE_ENV + "]"]
+debugArr.map(function (dat, ind) {
+    console.info(dat.yellow);
+});
 
 module.exports = {
     context: ROOT_PATH/*The base directory, an absolute path, for resolving entry points and loaders from configuration, By default the current directory is used,*/,
-    entry: {index: './src/index.js'/*the entry point of our app*/},
+    entry: {
+        index: './src/index.js'/*the entry point of our app*/,
+        'react-router': ['react-router']
+    },
     output: {
         path: OUT_PUT_PATH,
         publicPath: '/dist/'/*necessary for HMR to know where to load the hot update chunks*/,
@@ -67,18 +69,25 @@ module.exports = {
     devtool: '#eval-source-map'/*https://webpack.js.org/configuration/devtool/*/,
     plugins: [/*extractCss*/
         extractCSS,
-        extractLESS]
+        extractLESS]/*,
+    externals: {
+        'react': 'window.React'
+    }*/
 }
 
 if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map'
+    // module.exports.devtool = '#source-map'
+    console.info("production package starting...".red)
+    module.exports.devtool = false
     module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"'
             }
         }),
+        new webpack.optimize.CommonsChunkPlugin({name:'react-router', filename:'react-router.js'}),
         new webpack.optimize.UglifyJsPlugin({
+            comments: false,
             compress: {
                 warnings: false
             }

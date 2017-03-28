@@ -1,6 +1,6 @@
 import React from 'react'
 import {render} from 'react-dom'
-import {Router, Route, IndexRoute, Redirect, hashHistory, browserHistory} from 'react-router'
+import {Router, Route, Redirect, browserHistory} from 'react-router'
 
 
 import App from './components/App'
@@ -24,6 +24,7 @@ import 'antd/dist/antd.css'
 
 document.head.appendChild($("link", {"rel": "stylesheet", "type": "text/css", "href": "dist/css/index-css.css"}))
 document.head.appendChild($("link", {"rel": "stylesheet", "type": "text/css", "href": "dist/css/index-less.css"}))
+document.head.appendChild($("script", {"src": "/dist/react-router.js"}))
 let $div = document.body.appendChild($("div"))
 
 render((
