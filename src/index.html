@@ -15,7 +15,7 @@
     <script type="text/javascript" src="js/awardRotate.js"></script>
     <style>
         .canvas {
-            border: 1px solid gold;
+            /*border: 1px solid gold;*/
         }
     </style>
 
@@ -44,88 +44,91 @@
 
 <script>
 
+    if (document.createElement("canvas").getContext) {
 
-    CanvasRenderingContext2D.prototype.fillArc = function (x, y, rad, bDeg, eDeg, rev, col) {
-        this.fillStyle = col;
-        this.beginPath();
-        this.arc(x, y, rad, bDeg, eDeg, rev);
-        this.lineTo(x, y);
-        this.closePath();
-        this.fill();
-        return this;
     }
-    var canvas = document.createElement("canvas"),
-        wid = 600, hei = 600;
-    canvas.width = wid;
-    canvas.height = hei;
-    canvas.setAttribute("class", "canvas")
-    document.body.appendChild(canvas);
-    if (canvas.getContext) {
-        var ctx = canvas.getContext("2d"),
-            xAx = wid / 2,
-            yAx = hei / 2,
-            rad = wid < hei ? wid / 2 : hei / 2,
-            tMaxWid = 30,
-            dats = ["2倍", "4倍", "6倍", "8倍", "谢谢参与"],
-            cols = [ctx.createLinearGradient(0, 0, 0, rad), ctx.createLinearGradient(0, 0, 0, rad), ctx.createLinearGradient(0, 0, 0, rad), ctx.createLinearGradient(0, 0, 0, rad), ctx.createLinearGradient(0, 0, 0, rad)],
-            datLen = dats.length,
-            deg = Math.PI * 2 / datLen,
-            bDeg = Math.PI * 1.5 - deg / 2;
-        cols[0].addColorStop(0, "#FFF930");
-        cols[0].addColorStop(1, "#dddb8b");
-        cols[1].addColorStop(0, "#85ff52");
-        cols[1].addColorStop(1, "#dd8d9e");
-        cols[2].addColorStop(0, "#ffc1b4");
-        cols[2].addColorStop(1, "#85ddaf");
-        cols[3].addColorStop(0, "#336bff");
-        cols[3].addColorStop(1, "#7392dd");
-        cols[4].addColorStop(0, "#aaffee");
-        cols[4].addColorStop(1, "#93c5dd");
-
-        for (var i = 0; i < datLen; i++) {
-            var dat = dats[i];
-            ctx.fillStyle = cols[i];
-            ctx.beginPath();
-            ctx.arc(wid / 2, hei / 2, wid / 2, i * deg, i * deg + deg, false);
-            ctx.arc(wid / 2, hei / 2, hei / 8, i * deg + deg, i * deg, true);
-            ctx.stroke();
-            ctx.fill();
-            ctx.save();
-            ctx.fillStyle = "#CB0030";
-            var line_height = 30;
-            ctx.translate(wid / 2 + Math.cos(i * deg + deg / 2) * wid / 3, hei / 2 + Math.sin(i * deg + deg / 2) * wid / 3);
-            ctx.rotate(i * deg + deg / 2 + Math.PI / 2);
-            if (dat.indexOf("\n") > 0) {//换行
-                var texts = dat.split("\n");
-                for (var j = 0; j < texts.length; j++) {
-                    ctx.font = j == 0 ? 'bold 22px Microsoft YaHei' : 'bold 22px Microsoft YaHei';
-                    if (j == 0) {
-                        ctx.fillText(texts[j], -ctx.measureText(texts[j]).width / 2, j * line_height);
-                    } else {
-                        ctx.fillText(texts[j], -ctx.measureText(texts[j]).width / 2, j * line_height);
-                    }
-                }
-            } else if (dat.indexOf("\n") == -1 && dat.length > 6) {
-                dat = dat.substring(0, 6) + "||" + dat.substring(6);
-                var texts = dat.split("||");
-                for (var j = 0; j < texts.length; j++) {
-                    ctx.fillText(texts[j], -ctx.measureText(texts[j]).width / 2, j * line_height);
-                }
-            } else {
-                ctx.fillText(dat, -ctx.measureText(dat).width / 2, 0);
-            }
-            ctx.restore();
+    function createCanvas(wid, hei) {
+        var canvas = document.createElement("canvas");
+        canvas.width = wid;
+        canvas.height = hei;
+        canvas.setAttribute("class", "canvas")
+        return canvas;
+    }
+    function randomColor() {
+        var colCharArr = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E'],
+            colCharLen = colCharArr.length,
+            res = "#";
+        for (var i = 0; i < 6; i++) {
+            res += colCharArr[Math.floor(Math.random() * colCharLen)];
         }
+        return res;
+    }
+    function randomLGColors(len) {
+        var res = [];
+        for (var i = 0; i < len; i++) {
+            res[i] = {
+                bCol: randomColor(),
+                eCol: randomColor()
+            }
+        }
+        return res;
+    }
+    function randomColors(len) {
+        var res = [];
+        for (var i = 0; i < len; i++) {
+            res[i] = randomColor();
+        }
+        return res;
     }
 
-    var turntable = new Turntable.rotate(canvas, {
+    var wid = 600, xAx = wid / 2,
+        hei = 600, yAx = hei / 2,
+        rad = wid < hei ? wid / 2 : hei / 2,
+        canvas = document.body.appendChild(createCanvas(wid, hei)), ctx = canvas.getContext("2d");
+
+    var dats = ["2倍", "4倍", "6倍", "8倍", "谢谢参与"],
+        font = "bold 55px Microsoft YaHei",
+        datLen = dats.length,
+        aDeg = Math.PI * 2 / datLen,
+        bDeg = Math.PI * -1 / 2 - aDeg / 2,
+        eDeg = bDeg + aDeg,
+//        cols = randomColors(datLen);
+        cols = randomLGColors(datLen);
+    ctx.translate(xAx, yAx);
+    for (var i = 0; i < datLen; i++) {
+        var dat = dats[i],
+            col = cols[i],
+            colType = Object.prototype.toString.call(col),
+            colSty = col;
+
+        if (i !== 0) ctx.rotate(aDeg);
+
+        if (colType == "[object Object]") {
+            colSty = ctx.createLinearGradient(0, 0, 0, rad * -1);
+            colSty.addColorStop(0, col.bCol);
+            colSty.addColorStop(1, col.eCol);
+        } else if (colType == "[object String]") {
+            colSty = col;
+        }
+
+        ctx.fillStyle = colSty;
+        ctx.beginPath();
+        ctx.arc(0, 0, rad, bDeg, eDeg, false);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = randomColor();
+        ctx.font = font;
+        ctx.fillText(dat, ctx.measureText(dat).width * -1 / 2, rad * -1 * 2 / 3);
+    }
+    /*var turntable = new Turntable.rotate(canvas, {
         angle: 0,
         animateTo: 1800 + 1800,
         duration: 6000,
         callback: function () {
-            alert("res");
+            console.info("res");
         }
-    });
-
+    });*/
 </script>
 </html>
