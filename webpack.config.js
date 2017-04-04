@@ -18,7 +18,7 @@ module.exports = {
     context: ROOT_PATH/*The base directory, an absolute path, for resolving entry points and loaders from configuration, By default the current directory is used,*/,
     entry: {
         index: './src/index.js'/*the entry point of our app*/,
-        'react-router': ['react-router']
+        'react-router': ['react-router-dom']
     },
     output: {
         path: OUT_PUT_PATH,

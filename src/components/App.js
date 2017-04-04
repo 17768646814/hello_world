@@ -7,6 +7,8 @@ import {Button, Layout, Menu, Breadcrumb, Icon} from 'antd'
 import 'antd/lib/button/style/index.css'
 import './App.css'
 
+import MarkDown from './common/MarkDown'
+
 const {SubMenu} = Menu
 const {Header, Content, Footer, Sider} = Layout
 
@@ -18,6 +20,8 @@ class App extends Component {
             content: 'Hello, world'
         }
     }
+
+
 
     render() {
         return (
@@ -80,7 +84,7 @@ class App extends Component {
                             </Menu>
                         </Sider>
                         <Content style={{padding: '0 24px', minHeight: 280}}>
-                            Content
+                            <MarkDown/>
                         </Content>
                     </Layout>
                 </Content>

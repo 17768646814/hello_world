@@ -1,7 +1,11 @@
 import React from 'react'
 import {render} from 'react-dom'
-import {Router, Route, Redirect, browserHistory} from 'react-router'
 
+import {
+    BrowserRouter as Router,
+    Route,
+    Link
+} from 'react-router-dom'
 
 import App from './components/App'
 
@@ -28,8 +32,7 @@ document.head.appendChild($("script", {"src": "/dist/react-router.js"}))
 let $div = document.body.appendChild($("div"))
 
 render((
-    <Router history={browserHistory}>
-        <Route path="/" component={App}/>
-        <Redirect from='*' to='/'/>
+    <Router>
+        <Route exact path="/" component={App}/>
     </Router>
 ), $div);

@@ -49,7 +49,8 @@ npm i --D babel-core babel-loader babel-preset-es2015 babel-preset-react babel-p
 npm i --D style-loader css-loader less less-loader postcss-loader autoprefixer
 npm i --D colors
 npm i --D webpack webpack-dev-server cross-env extract-text-webpack-plugin html-webpack-plugin
-npm i -S react react-dom react-router@3.x
+#react-router@3.x
+npm i -S react react-dom react-router-dom
 #markdown js & antd
 npm i -S markdown antd
 
