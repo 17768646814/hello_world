@@ -39,13 +39,35 @@
     </div>
 </div>
 -->
-
+<pre id="pre"></pre>
 </body>
 
 <script>
 
     if (document.createElement("canvas").getContext) {
 
+    }
+    function createElement(ele, attr) {
+        var ele = document.createElement(ele);
+        for (var i in attr) {
+            ele.setAttribute(i, attr[i]);
+        }
+        return ele;
+    }
+    function createImg(attr, callback) {
+        var img = document.createElement("img");
+        for (var i in attr) {
+            img.setAttribute(i, attr[i]);
+        }
+        if (img.complete) {
+            callback(img);
+        } else {
+            /*主要针对chrome*/
+            img.onload = function () {
+                callback(img);
+            }
+        }
+        return img;
     }
     function createCanvas(wid, hei) {
         var canvas = document.createElement("canvas");
@@ -86,49 +108,61 @@
         rad = wid < hei ? wid / 2 : hei / 2,
         canvas = document.body.appendChild(createCanvas(wid, hei)), ctx = canvas.getContext("2d");
 
-    var dats = ["2倍", "4倍", "6倍", "8倍", "谢谢参与"],
-        font = "bold 55px Microsoft YaHei",
-        datLen = dats.length,
-        aDeg = Math.PI * 2 / datLen,
-        bDeg = Math.PI * -1 / 2 - aDeg / 2,
-        eDeg = bDeg + aDeg,
+    rad = rad * 9 / 10;
+    createImg({src: "img/cj_bg.png"}, function (img) {
+        ctx.drawImage(img, 0, 0, wid, hei);
+        drawTurntable();
+    });
+
+    function drawTurntable() {
+        var dats = ["2倍", "4倍", "6倍", "8倍", "谢谢参与"],
+            font = "bold 55px Microsoft YaHei",
+            datLen = dats.length,
+            aDeg = Math.PI * 2 / datLen,
+            bDeg = Math.PI * -1 / 2 - aDeg / 2,
+            eDeg = bDeg + aDeg,
 //        cols = randomColors(datLen);
-        cols = randomLGColors(datLen);
-    ctx.translate(xAx, yAx);
-    for (var i = 0; i < datLen; i++) {
-        var dat = dats[i],
-            col = cols[i],
-            colType = Object.prototype.toString.call(col),
-            colSty = col;
+            cols = randomLGColors(datLen);
+        ctx.translate(xAx, yAx);
+        for (var i = 0; i < datLen; i++) {
+            var dat = dats[i],
+                col = cols[i],
+                colType = Object.prototype.toString.call(col),
+                colSty = col;
 
-        if (i !== 0) ctx.rotate(aDeg);
+            if (colType == "[object Object]") {
+                colSty = ctx.createLinearGradient(0, 0, 0, rad * -1);
+                colSty.addColorStop(0, col.bCol);
+                colSty.addColorStop(1, col.eCol);
+            } else if (colType == "[object String]") {
+                colSty = col;
+            }
 
-        if (colType == "[object Object]") {
-            colSty = ctx.createLinearGradient(0, 0, 0, rad * -1);
-            colSty.addColorStop(0, col.bCol);
-            colSty.addColorStop(1, col.eCol);
-        } else if (colType == "[object String]") {
-            colSty = col;
+            ctx.fillStyle = colSty;
+            ctx.beginPath();
+            ctx.arc(0, 0, rad, bDeg, eDeg, false);
+            ctx.lineTo(0, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = randomColor();
+            ctx.font = font;
+            ctx.fillText(dat, ctx.measureText(dat).width * -1 / 2, rad * -1 * 2 / 3);
+            ctx.rotate(aDeg);
         }
-
-        ctx.fillStyle = colSty;
-        ctx.beginPath();
-        ctx.arc(0, 0, rad, bDeg, eDeg, false);
-        ctx.lineTo(0, 0);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = randomColor();
-        ctx.font = font;
-        ctx.fillText(dat, ctx.measureText(dat).width * -1 / 2, rad * -1 * 2 / 3);
     }
+
+    createImg({src: "img/jt.png"}, function (img) {
+        ctx.drawImage(img, img.width * -1 / 2, img.height * -1 / 2);
+    });
     /*var turntable = new Turntable.rotate(canvas, {
-        angle: 0,
-        animateTo: 1800 + 1800,
-        duration: 6000,
-        callback: function () {
-            console.info("res");
-        }
-    });*/
+     angle: 0,
+     animateTo: 1800 + 1800,
+     duration: 6000,
+     callback: function () {
+     console.info("res");
+     }
+     });*/
+
 </script>
 </html>
